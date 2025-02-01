@@ -1,8 +1,6 @@
 package player
 
 import (
-	"math"
-
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/nx23/2d_side_scroller/assets"
 )
@@ -14,15 +12,17 @@ type Vector struct {
 type Character struct {
 	Position Vector
 	W, H int
-	speed     float64
+	HorizontalSpeed     float64
+	VerticalSpeed     float64
 	Sprites    map[string]*ebiten.Image
 }
 
 var Player = Character{
-	Position: Vector{X: 100, Y: 100},
+	Position: Vector{X: 100, Y: 400},
 	W: 16,
 	H: 16,
-	speed: float64(300 / ebiten.TPS()),
+	HorizontalSpeed: float64(300 / ebiten.TPS()),
+	VerticalSpeed: 0,
 	Sprites: map[string]*ebiten.Image{
 		"body": assets.BodySprite,
 		"face": assets.FaceSprite,
@@ -40,28 +40,33 @@ func (player *Character) DrawPlayer(screen *ebiten.Image) {
 }
 
 func (player *Character) Update() {
-	var delta Vector
+	player.Move()
+	player.Jump()
+}
 
-	if ebiten.IsKeyPressed(ebiten.KeyDown) && player.Position.Y < 400 {
-		delta.Y = player.speed
-	}
-	if ebiten.IsKeyPressed(ebiten.KeyUp) && player.Position.Y > 0 {
-		delta.Y = -player.speed
-	}
+func (player *Character) Move() {
 	if ebiten.IsKeyPressed(ebiten.KeyLeft) && player.Position.X > 0 {
-		delta.X = -player.speed
+		player.Position.X -= player.HorizontalSpeed
 	}
 	if ebiten.IsKeyPressed(ebiten.KeyRight) && player.Position.X < 560 {
-		delta.X = player.speed
+		player.Position.X += player.HorizontalSpeed
 	}
-	
-	// Check for diagonal movement
-	if delta.X != 0 && delta.Y != 0 {
-		factor := player.speed / math.Sqrt(delta.X*delta.X+delta.Y*delta.Y)
-		delta.X *= factor
-		delta.Y *= factor
+}
+
+func (player *Character) Jump() {
+	const jumpStrength = 10
+	const gravity = 0.5
+	const groundLevel = 400
+
+	if ebiten.IsKeyPressed(ebiten.KeySpace) && player.Position.Y >= groundLevel {
+		player.VerticalSpeed = -jumpStrength
 	}
 
-	player.Position.X += delta.X
-	player.Position.Y += delta.Y
+	player.Position.Y += player.VerticalSpeed
+	if player.Position.Y < groundLevel {
+		player.VerticalSpeed += gravity
+	} else {
+		player.Position.Y = groundLevel
+		player.VerticalSpeed = 0
+	}
 }
