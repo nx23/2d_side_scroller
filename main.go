@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/nx23/2d_side_scroller/internal/background"
 	"github.com/nx23/2d_side_scroller/internal/player"
 	"github.com/nx23/2d_side_scroller/internal/screen"
 	// "github.com/hajimehoshi/ebiten/v2/text/v2"
@@ -21,6 +22,9 @@ func (g *Game) Update() error {
 
 func (g *Game) Draw(screen *ebiten.Image) {
 	// ScoreFont := assets.ScoreFont
+
+    // Background
+    background.Draw(screen)
 
 	// Player
     g.Player.DrawPlayer(screen)

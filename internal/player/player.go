@@ -11,18 +11,18 @@ type Vector struct {
 
 type Character struct {
 	Position Vector
-	W, H int
+	W, H float64
 	HorizontalSpeed     float64
 	VerticalSpeed     float64
 	Sprites    map[string]*ebiten.Image
 }
 
 var Player = Character{
-	Position: Vector{X: 100, Y: 400},
-	W: 16,
-	H: 16,
-	HorizontalSpeed: float64(300 / ebiten.TPS()),
-	VerticalSpeed: 0,
+	Position: Vector{X: 100.0, Y: 400.0},
+	W: 16.0,
+	H: 16.0,
+	HorizontalSpeed: float64(300.0 / ebiten.TPS()),
+	VerticalSpeed: 0.0,
 	Sprites: map[string]*ebiten.Image{
 		"body": assets.BodySprite,
 		"face": assets.FaceSprite,

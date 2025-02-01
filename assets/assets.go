@@ -15,6 +15,7 @@ var assets embed.FS
 
 var BodySprite = mustLoadImage("body.png")
 var FaceSprite = mustLoadImage("face.png")
+var BackgroundSprite = mustLoadImage("background.png")
 var ScoreFont = mustLoadFont("PressStart2P-Regular.ttf")
 
 func mustLoadImage(name string) *ebiten.Image {
