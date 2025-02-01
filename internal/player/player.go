@@ -42,7 +42,7 @@ func (player *Character) DrawPlayer(screen *ebiten.Image) {
 func (player *Character) Update() {
 	var delta Vector
 
-	if ebiten.IsKeyPressed(ebiten.KeyDown) && player.Position.Y < 480 {
+	if ebiten.IsKeyPressed(ebiten.KeyDown) && player.Position.Y < 400 {
 		delta.Y = player.speed
 	}
 	if ebiten.IsKeyPressed(ebiten.KeyUp) && player.Position.Y > 0 {
@@ -51,7 +51,7 @@ func (player *Character) Update() {
 	if ebiten.IsKeyPressed(ebiten.KeyLeft) && player.Position.X > 0 {
 		delta.X = -player.speed
 	}
-	if ebiten.IsKeyPressed(ebiten.KeyRight) && player.Position.X < 640 {
+	if ebiten.IsKeyPressed(ebiten.KeyRight) && player.Position.X < 560 {
 		delta.X = player.speed
 	}
 	

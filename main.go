@@ -3,16 +3,12 @@ package main
 import (
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/nx23/2d_side_scroller/internal/player"
+	"github.com/nx23/2d_side_scroller/internal/screen"
 	// "github.com/hajimehoshi/ebiten/v2/text/v2"
 )
 
 // var pressStart2P []byte
 // var pressStart2PFaceSource *text.GoTextFaceSource
-
-const (
-	screenWidth  = 640
-	screenHeight = 480
-)
 
 type Game struct {
     Player *player.Character
@@ -31,14 +27,13 @@ func (g *Game) Draw(screen *ebiten.Image) {
 }
 
 func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {
-	return screenWidth, screenHeight
+	return screen.Width, screen.Height
 }
 
 func main() {
 	ebiten.SetWindowTitle("Simple 2D Side Scroller")
-	ebiten.SetWindowSize(screenWidth, screenHeight)
-    op := &ebiten.DrawImageOptions{}
-    op.GeoM.Translate(150, 200)
+	ebiten.SetWindowSize(screen.Width, screen.Height)
+
     player := player.Player
 
 	g := &Game{
