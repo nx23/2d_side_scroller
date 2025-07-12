@@ -15,7 +15,9 @@ type Platform struct {
 }
 
 func (p *Platform) Draw(screen *ebiten.Image) {
-	p.Hitbox = *hitbox.NewHitbox(float32(p.X), float32(p.Y), float32(p.Width), float32(p.Height))
-	vector.DrawFilledRect(screen, float32(p.X), float32(p.Y), float32(p.Width), float32(p.Height), color.RGBA{0xff, 0, 0, 0xff}, false)
-	// platform.Hitbox.Draw(screen)
+	rectColor := color.RGBA{R: 255, G: 0, B: 0, A: 255}
+	x, y := float32(p.X), float32(p.Y)
+	w, h := float32(p.Width), float32(p.Height)
+
+	vector.DrawFilledRect(screen, x, y, w, h, rectColor, false)
 }
