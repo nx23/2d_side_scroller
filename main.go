@@ -62,37 +62,45 @@ func (g *Game) handleCollisions() {
     for _, p := range g.Platforms {
         p.Hitbox = *hitbox.NewHitbox(float32(p.X), float32(p.Y), float32(p.Width), float32(p.Height))
         
-        // Simple overlap check first to avoid expensive collision detection
+        // Early exit if no collision possible
         if g.Player.X >= p.X + p.Width || g.Player.X + g.Player.Width <= p.X ||
            g.Player.Y >= p.Y + p.Height || g.Player.Y + g.Player.Height <= p.Y {
-            continue // No collision possible, skip this platform
+            continue
         }
         
-        collideOnBottom := p.Hitbox.CollidesOnBottom(&g.Player.Hitbox)
+        // Check collisions
         collideOnTop := p.Hitbox.CollidesOnTop(&g.Player.Hitbox)
+        collideOnBottom := p.Hitbox.CollidesOnBottom(&g.Player.Hitbox)
         collideOnLeft := p.Hitbox.CollidesOnLeft(&g.Player.Hitbox)
         collideOnRight := p.Hitbox.CollidesOnRight(&g.Player.Hitbox)
 
-        // Calculate overlaps only once
+        // Calculate overlaps using simpler math
         overlapTop := (g.Player.Y + g.Player.Height) - p.Y
         overlapBottom := (p.Y + p.Height) - g.Player.Y
         overlapLeft := (g.Player.X + g.Player.Width) - p.X
         overlapRight := (p.X + p.Width) - g.Player.X
 
-        // Handle collisions with simplified logic
-        if collideOnTop && g.Player.VerticalSpeed >= 0 && overlapTop <= overlapLeft && overlapTop <= overlapRight {
+        // Handle vertical collisions first (highest priority)
+        if collideOnTop && g.Player.VerticalSpeed >= 0 && overlapTop < overlapLeft && overlapTop < overlapRight {
             newGroundedState = true
             g.Player.VerticalSpeed = 0
             g.Player.Y = float64(p.Y - g.Player.Height)
             g.updatePlayerHitbox()
-        } else if collideOnBottom && g.Player.VerticalSpeed < 0 && overlapBottom <= overlapLeft && overlapBottom <= overlapRight {
+            continue // Skip horizontal collision for this platform
+        }
+        
+        if collideOnBottom && g.Player.VerticalSpeed < 0 && overlapBottom < overlapLeft && overlapBottom < overlapRight {
             g.Player.VerticalSpeed = 0
             g.Player.Y = float64(p.Y + p.Height)
             g.updatePlayerHitbox()
-        } else if collideOnLeft && overlapLeft <= overlapTop {
+            continue // Skip horizontal collision for this platform
+        }
+        
+        // Handle horizontal collisions only if no vertical collision
+        if collideOnLeft && overlapLeft < overlapTop {
             g.Player.X = float64(p.X - g.Player.Width)
             g.updatePlayerHitbox()
-        } else if collideOnRight && overlapRight <= overlapTop {
+        } else if collideOnRight && overlapRight < overlapTop {
             g.Player.X = float64(p.X + p.Width)
             g.updatePlayerHitbox()
         }
@@ -133,14 +141,19 @@ func (g *Game) Update() error {
 }
 
 func (g *Game) getInputText() string {
+    // Cache the key states to avoid multiple calls
+    leftPressed := ebiten.IsKeyPressed(ebiten.KeyLeft) || ebiten.IsKeyPressed(ebiten.KeyA)
+    rightPressed := ebiten.IsKeyPressed(ebiten.KeyRight) || ebiten.IsKeyPressed(ebiten.KeyD)
+    jumpPressed := ebiten.IsKeyPressed(ebiten.KeySpace) || ebiten.IsKeyPressed(ebiten.KeyUp)
+    
     var keys []string
-    if ebiten.IsKeyPressed(ebiten.KeyLeft) || ebiten.IsKeyPressed(ebiten.KeyA) {
+    if leftPressed {
         keys = append(keys, "LEFT")
     }
-    if ebiten.IsKeyPressed(ebiten.KeyRight) || ebiten.IsKeyPressed(ebiten.KeyD) {
+    if rightPressed {
         keys = append(keys, "RIGHT")
     }
-    if ebiten.IsKeyPressed(ebiten.KeySpace) || ebiten.IsKeyPressed(ebiten.KeyUp) {
+    if jumpPressed {
         keys = append(keys, "JUMP")
     }
     
